@@ -40,7 +40,7 @@ nmap <silent> <C-S-J> :wincmd j<CR>
 nmap <silent> <C-S-K> :wincmd k<CR>
 
 function! PFZF()
-	let userinput=input('Directory> ')
+	let userinput=input("Directory> ", "", "file")
 	execute 'Z '.userinput
 	execute "call fzf#run({ 'sink': 'tabe' })"
 endfunction

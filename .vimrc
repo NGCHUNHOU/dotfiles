@@ -42,7 +42,7 @@ nmap <silent> <C-S-K> :wincmd k<CR>
 function! PFZF()
 	let userinput=input("Directory> ", "", "file")
 	execute 'Z '.userinput
-	execute "call fzf#run({ 'sink': 'tabe' })"
+	execute "call fzf#run({ 'sink': 'edit' })"
 endfunction
 nnoremap <silent> <C-P> :call PFZF()<CR>
 

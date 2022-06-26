@@ -24,7 +24,7 @@ nnoremap <silent> <C-S-E> :NERDTreeToggle<CR>
 " let g:floaterm_width = 0.7
 " let g:floaterm_height  = 1.0
 " let g:floaterm_opener = "edit"
-" let g:floaterm_wintype = "split"
+let g:floaterm_wintype = "split"
 " 
 " toggle terminal with ctrl-`
 " nmap <silent> <C-`> :FloatermToggle<CR>
@@ -53,9 +53,14 @@ function! PGrepper() abort
 endfunction
 nmap <silent> <C-S-F> :call PGrepper()<CR>
 
+function! GoToBuffer()
+       let as=input("Go to Buffer> ", "", "buffer")
+       execute "b! ".as
+endfunction
+
 " buffer terminal quick swtich
-function! RenameTermAndLeave()
-       if stridx(bufname(), "bash") >= 0
+function! RenameTermFile()
+       if stridx(bufname(), "bin/bash") >= 0 || stridx(bufname(), "bin/sh") >= 0
                let us=input("Rename> ")
                execute "file ".us
        endif
@@ -63,7 +68,17 @@ function! RenameTermAndLeave()
        execute "b! ".as
 endfunction
 
+function! RenameTermNew()
+       if stridx(bufname(), "bin/bash") >= 0 || stridx(bufname(), "bin/sh") >= 0
+               let us=input("Rename> ")
+               execute "file ".us
+       endif
+       execute "hide term ++curwin"
+endfunction
+
+nmap <silent> <C-Z> <C-W>:call GoToBuffer()<CR>
 nmap <silent> <C-`> :term ++curwin<CR>
-tmap <silent> <C-`> <C-W>:call RenameTermAndLeave()<CR>
+tmap <silent> <C-`> <C-W>:call RenameTermNew()<CR>
+tmap <silent> <C-Z> <C-W>:call RenameTermFile()<CR>
 tmap <silent> <F3> <C-W><S-N>
 nmap <silent> <F3> i

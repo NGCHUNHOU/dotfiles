@@ -1,14 +1,15 @@
 # bash rc file for window os
 
 alias vifm="winpty vifm"
+alias python="winpty python"
 alias fzf="winpty fzf"
 alias mysql="winpty mysql"
 alias restic="winpty restic"
 alias nvim="winpty nvim"
 alias fzv="fzf --bind \"enter:execute(vim {})\""
 
-BINARYGROUPDIR="/d/winapps/apps/*"
-BINARYGROUPDIROLDLIST=($BINARYGROUPDIR)
+BINARYGROUPDIR="/d/winapps/apps/"
+DIRSUM=$(ls -l $BINARYGROUPDIR | grep -c ^d)
 
 . /usr/bin/z.sh
 
@@ -19,7 +20,7 @@ else
 	source ~/.bashCache;
 fi
 
-if [[ "${#BINARYGROUPDIROLDLIST}" != "${#BINARYGROUPDIRNEWLIST}" || CACHED == 0 ]]; then
+if [[ $CACHED == 0 || "${DIRSUM}" != "${DIROLDSUM}" ]]; then
 	echo "reloading PATH..."
 	exepath=$(find $BINARYGROUPDIR -name "*.exe" -printf "%h\n" | sort | uniq)
 	for text in $(echo ${exepath[@]} | sed "s/ /:/g"); do
@@ -28,7 +29,8 @@ if [[ "${#BINARYGROUPDIROLDLIST}" != "${#BINARYGROUPDIRNEWLIST}" || CACHED == 0 
 	export PATH=$PATH:$BINPATH
 
 	BINARYGROUPDIRNEWLIST=($BINARYGROUPDIR)
-	typeset -p PATH BINARYGROUPDIRNEWLIST > ~/.bashCache
+	DIROLDSUM=$DIRSUM
+	typeset -p PATH BINARYGROUPDIRNEWLIST DIROLDSUM > ~/.bashCache
 fi
 
 PROGDEPS="vim fzf rg z"

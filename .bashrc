@@ -9,7 +9,7 @@ alias nvim="winpty nvim"
 alias fzv="fzf --bind \"enter:execute(vim {})\""
 
 BINARYGROUPDIR="/d/winapps/apps/"
-DIRSUM=$(ls -l $BINARYGROUPDIR | grep -c ^d)
+DIRSUM=$(ls -l $BINARYGROUPDIR | grep -c "^d\|\-")
 
 . /usr/bin/z.sh
 

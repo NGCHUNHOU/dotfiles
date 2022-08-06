@@ -16,6 +16,9 @@ syntax on
 execute pathogen#infect('$VIM/vim82/bundle/{}')
 execute pathogen#infect('$VIM/vim82/bundle2/{}')
 
+set bg=dark
+colorscheme gruvbox
+
 " nnoremap <silent> <C-P> :FZF<CR>
 nnoremap <silent> <C-S-E> :NERDTreeToggle<CR>
 " nmap <silent> <C-S-F> :Rg<CR>
@@ -58,27 +61,32 @@ function! GoToBuffer()
        execute "b! ".as
 endfunction
 
-" buffer terminal quick swtich
-function! RenameTermFile()
+function! PromptName()
        if stridx(bufname(), "bin/bash") >= 0 || stridx(bufname(), "bin/sh") >= 0
                let us=input("Rename> ")
                execute "file ".us
        endif
-       let as=input("Go to Buffer> ", "", "buffer")
-       execute "b! ".as
+endfunction
+
+" buffer terminal quick swtich
+function! RenameTermFile()
+       execute ":call PromptName()"
+       execute ":call GoToBuffer()"
 endfunction
 
 function! RenameTermNew()
-       if stridx(bufname(), "bin/bash") >= 0 || stridx(bufname(), "bin/sh") >= 0
-               let us=input("Rename> ")
-               execute "file ".us
-       endif
+       execute ":call PromptName()"
        execute "hide term ++curwin"
 endfunction
 
 nmap <silent> <C-Z> <C-W>:call GoToBuffer()<CR>
-nmap <silent> <C-`> :term ++curwin<CR>
-tmap <silent> <C-`> <C-W>:call RenameTermNew()<CR>
+" alacritty doesnt support backtick call term, so use F1 instead
+" nmap <silent> <C-`> :term ++curwin<CR>
+" tmap <silent> <C-`> <C-W>:call RenameTermNew()<CR>
+nmap <silent> <F1> :only!<CR>:term ++curwin<CR>
+tmap <silent> <F1> <C-W>:only!<CR><C-W>:call RenameTermNew()<CR>
+nmap <silent> <F2> <C-W>:vert term<CR>
+tmap <silent> <F2> <C-W>:vert term<CR>
 tmap <silent> <C-Z> <C-W>:call RenameTermFile()<CR>
 tmap <silent> <F3> <C-W><S-N>
 nmap <silent> <F3> i

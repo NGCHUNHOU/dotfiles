@@ -8,6 +8,9 @@ alias restic="winpty restic"
 alias nvim="winpty nvim"
 alias fzv="fzf --bind \"enter:execute(vim {})\""
 
+# enable ctrl-u and ctrl-d to move up and down when fzf
+export FZF_DEFAULT_OPTS='--bind ctrl-u:page-up,ctrl-d:page-down'
+
 BINARYGROUPDIR="/d/winapps/apps/"
 DIRSUM=$(ls -l $BINARYGROUPDIR | grep -c "^d\|\-")
 
@@ -48,3 +51,5 @@ fi
 
 # custom command function
 function rgv() { vim -c "silent grep \"$@\"" -c "copen"; }
+
+source /d/winapps/apps/alacritty/alacritty.bash

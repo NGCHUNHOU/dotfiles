@@ -27,7 +27,11 @@ nnoremap <silent> <C-S-E> :NERDTreeToggle<CR>
 " let g:floaterm_width = 0.7
 " let g:floaterm_height  = 1.0
 " let g:floaterm_opener = "edit"
-let g:floaterm_wintype = "split"
+" let g:floaterm_wintype = "split"
+
+" prevent cmd sh.exe popup when invoke FZF ( window 7/10 https://github.com/junegunn/fzf/issues/2153 )
+let $TERM = "cygwin"
+
 " 
 " toggle terminal with ctrl-`
 " nmap <silent> <C-`> :FloatermToggle<CR>
@@ -42,19 +46,39 @@ nmap <silent> <C-S-L> :wincmd l<CR>
 nmap <silent> <C-S-J> :wincmd j<CR>
 nmap <silent> <C-S-K> :wincmd k<CR>
 
-function! PFZF()
+function! PromptDir()
 	let userinput=input("Directory> ", "", "file")
-	execute 'Z '.userinput
-	execute "call fzf#run({ 'sink': 'edit' })"
+	if userinput != "~"
+		execute 'Z '.userinput
+	else
+		cd "".userinput
+	endif
+endfunction
+
+function! PFZF()
+	execute ":call PromptDir()"
+	" execute "call fzf#run({ 'sink': 'edit' })"
+	execute "Files"
 endfunction
 nnoremap <silent> <C-P> :call PFZF()<CR>
+tmap <silent> <C-P> <C-W>:call PFZF()<CR>
 
-function! PGrepper() abort
-	let us=input("Directory> ", "", "file")
-	execute "Z ". us
-	execute "Grepper"
+" function! PGrepper() abort
+" 	let us=input("Directory> ", "", "file")
+" 	execute "Z ". us
+" 	execute "Grepper"
+" endfunction
+" nmap <silent> <C-S-F> :call PGrepper()<CR>
+
+" redefine fzf.vim Rg command to exclude filename search result
+command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0) 
+
+function! PFZFGrep() abort
+	execute ":call PromptDir()"
+	execute ":Rg"
 endfunction
-nmap <silent> <C-S-F> :call PGrepper()<CR>
+nmap <silent> <F4> :call PFZFGrep()<CR>
+tmap <silent> <F4> <C-W>:call PFZFGrep()<CR>
 
 function! GoToBuffer()
        let as=input("Go to Buffer> ", "", "buffer")
@@ -83,10 +107,17 @@ nmap <silent> <C-Z> <C-W>:call GoToBuffer()<CR>
 " alacritty doesnt support backtick call term, so use F1 instead
 " nmap <silent> <C-`> :term ++curwin<CR>
 " tmap <silent> <C-`> <C-W>:call RenameTermNew()<CR>
-nmap <silent> <F1> :only!<CR>:term ++curwin<CR>
+nmap <silent> <F1> :only!<CR>:term! ++curwin<CR>
 tmap <silent> <F1> <C-W>:only!<CR><C-W>:call RenameTermNew()<CR>
 nmap <silent> <F2> <C-W>:vert term<CR>
 tmap <silent> <F2> <C-W>:vert term<CR>
 tmap <silent> <C-Z> <C-W>:call RenameTermFile()<CR>
 tmap <silent> <F3> <C-W><S-N>
 nmap <silent> <F3> i
+
+" F1 = open new terminal in full screen
+" F2 = split vertical terminal
+" F3 = toggle between copy mode and terminal mode
+" F4 = search text in files
+" ctrl+p = quick open file
+" ctrl+z = swtich buffer

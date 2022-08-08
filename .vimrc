@@ -57,6 +57,9 @@ endfunction
 
 function! PFZF()
 	execute ":call PromptDir()"
+	if &buftype ==# 'terminal'
+		execute ":hide enew"	
+	endif
 	" execute "call fzf#run({ 'sink': 'edit' })"
 	execute "Files"
 endfunction
@@ -75,6 +78,9 @@ command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-hea
 
 function! PFZFGrep() abort
 	execute ":call PromptDir()"
+	if &buftype ==# 'terminal'
+		execute ":hide enew"	
+	endif
 	execute ":Rg"
 endfunction
 nmap <silent> <F4> :call PFZFGrep()<CR>

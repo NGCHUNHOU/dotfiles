@@ -113,13 +113,18 @@ nmap <silent> <C-Z> <C-W>:call GoToBuffer()<CR>
 " alacritty doesnt support backtick call term, so use F1 instead
 " nmap <silent> <C-`> :term ++curwin<CR>
 " tmap <silent> <C-`> <C-W>:call RenameTermNew()<CR>
-nmap <silent> <F1> :only!<CR>:term! ++curwin<CR>
-tmap <silent> <F1> <C-W>:only!<CR><C-W>:call RenameTermNew()<CR>
+nmap <silent> <expr> <F1> winnr() != 1 ? ':only!<CR>:term! ++curwin<CR>' : ':term! ++curwin<CR>'
+tmap <silent> <expr> <F1> winnr() != 1 ? '<C-W>:only!<CR><C-W>:call RenameTermNew()<CR>' : '<C-W>:call RenameTermNew()<CR>'
+
 nmap <silent> <F2> <C-W>:vert term<CR>
 tmap <silent> <F2> <C-W>:vert term<CR>
 tmap <silent> <C-Z> <C-W>:call RenameTermFile()<CR>
 tmap <silent> <F3> <C-W><S-N>
 nmap <silent> <F3> i
+
+" better keybinding for netrw
+au FileType netrw nmap <buffer> h -
+au FileType netrw nmap <buffer> l <CR>
 
 " F1 = open new terminal in full screen
 " F2 = split vertical terminal

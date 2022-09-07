@@ -32,7 +32,6 @@ nnoremap <silent> <C-S-E> :NERDTreeToggle<CR>
 " prevent cmd sh.exe popup when invoke FZF ( window 7/10 https://github.com/junegunn/fzf/issues/2153 )
 let $TERM = "cygwin"
 
-" 
 " toggle terminal with ctrl-`
 " nmap <silent> <C-`> :FloatermToggle<CR>
 " tmap <silent> <C-`> <C-W>:FloatermKill<CR>
@@ -48,18 +47,47 @@ nmap <silent> <C-S-K> :wincmd k<CR>
 
 function! PromptDir()
 	let userinput=input("Directory> ", "", "file")
-	if userinput != "~"
+       	if len(userinput) == 0
+               return 0
+       	elseif userinput != "~"
 		execute 'Z '.userinput
 	else
 		cd "".userinput
 	endif
 endfunction
 
+function s:get_closest_terminal()
+    let l:buffers = sort(tabpagebuflist('%'), 'n')
+    for l:number in reverse(l:buffers)
+        let l:type = getbufvar(l:number, '&buftype', '')
+
+        if l:type == "terminal"
+            return l:number
+        endif
+    endfor
+
+    return -1
+endfunction
+
+function s:get_term_dir()
+    let l:terminal_buffer = s:get_closest_terminal()
+    if l:terminal_buffer == -1
+        echoerr "No directory could be found"
+        return ""
+    endif
+    let l:title = term_gettitle(l:terminal_buffer)
+    " return substitute(l:title, "^.*: ", "", "")
+    return l:title
+endfunction
+
 function! PFZF()
 	execute ":call PromptDir()"
 	if &buftype ==# 'terminal'
+		let l:termdir = substitute(s:get_term_dir(), "^.*:", "", "")
 		execute ":hide enew"	
+		execute ":cd ".l:termdir
 	endif
+
 	" execute "call fzf#run({ 'sink': 'edit' })"
 	execute "Files"
 endfunction
@@ -79,7 +107,9 @@ command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-hea
 function! PFZFGrep() abort
 	execute ":call PromptDir()"
 	if &buftype ==# 'terminal'
+		let l:termdir = substitute(s:get_term_dir(), "^.*:", "", "")
 		execute ":hide enew"	
+		execute ":cd ".l:termdir
 	endif
 	execute ":Rg"
 endfunction
@@ -132,3 +162,4 @@ au FileType netrw nmap <buffer> l <CR>
 " F4 = search text in files
 " ctrl+p = quick open file
 " ctrl+z = swtich buffer
+" f in vim terminal or terminal = file manager auto cd directory on exit

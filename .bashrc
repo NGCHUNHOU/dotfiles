@@ -53,3 +53,10 @@ fi
 function rgv() { vim -c "silent grep \"$@\"" -c "copen"; }
 
 source /d/winapps/apps/alacritty/alacritty.bash
+
+if command -v fff &> /dev/null; then
+	f() {
+	    fff "$@"
+	    cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
+	}
+fi

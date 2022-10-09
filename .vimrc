@@ -152,6 +152,10 @@ tmap <silent> <C-Z> <C-W>:call RenameTermFile()<CR>
 tmap <silent> <F3> <C-W><S-N>
 nmap <silent> <F3> i
 
+" use function key for tag jump
+nmap <silent> <F11> <C-]>
+nmap <silent> <F12> <C-T>
+
 " better keybinding for netrw
 au FileType netrw nmap <buffer> h -
 au FileType netrw nmap <buffer> l <CR>

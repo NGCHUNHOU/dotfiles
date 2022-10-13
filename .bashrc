@@ -60,3 +60,25 @@ if command -v fff &> /dev/null; then
 	    cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
 	}
 fi
+
+pathFixfileName="msysCmdPathFix.cmd"
+makeMsysCmdPath() {
+if [ ! -f "/usr/bin/$pathFixfileName" ]; then
+echo "$pathFixfileName not found. creating default $pathFixfileName"
+cat << EOF > "/usr/bin/$pathFixfileName"
+@ECHO OFF
+IF defined ORIGINAL_PATH (
+SET "PATH=%ORIGINAL_PATH%"
+)
+IF "%1"=="" cmd
+@ECHO ON
+%*
+EOF
+fi
+}
+
+makeMsysCmdPath "$pathFixfileName"
+
+alias cmd="$pathFixfileName"
+alias npm="cmd npm $@"
+alias pnpm="cmd pnpm $@"

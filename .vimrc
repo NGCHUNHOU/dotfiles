@@ -172,7 +172,8 @@ function! GetBrowser()
 endfunction
 
 function! OpenURLUnderCursor() abort
-  let s:uri = expand('<cWORD>')
+  " get pathName string input from origin gx key
+  let s:uri = expand('<cfile>')
   " check s:uri when user key in gx
   " return file://c:/path/to/file if it is file and os is windows
   " return file:///path/to/file if it is file and os is windows

@@ -173,13 +173,25 @@ endfunction
 
 function! OpenURLUnderCursor() abort
   let s:uri = expand('<cWORD>')
-  let s:uri = substitute(s:uri, '?', '\\?', '')
-  let s:uri = substitute(s:uri, '^\~', substitute($HOME, "\/$", "", "").'/', '')
-  let s:uri = substitute(s:uri, '^\.', expand("%:p:h").'/', '')
-  let s:uri = shellescape(s:uri, 1)
+  " check s:uri when user key in gx
+  " return file://c:/path/to/file if it is file and os is windows
+  " return file:///path/to/file if it is file and os is windows
+  " return https://www.example.com if it is web url
+  if filereadable(s:uri)
+	  let s:uri = fnamemodify(s:uri, ':p')
+	  if has("win32unix")
+		  let s:uri = s:uri[0:1].':'.s:uri[2:]
+	  endif
+	  let s:uri = "file://".s:uri
+	  let s:uri = shellescape(s:uri, 1)
+  else
+	  let s:uri = substitute(s:uri, '?', '\\?', '')
+	  let s:uri = shellescape(s:uri, 1)
+  endif
   if s:uri != '' && GetBrowser() != -1
     silent exec "!".GetBrowser(). " '".s:uri."'"
     :redraw!
+    return
   else
     echoerr "uri is empty or no browser could be found"
   endif

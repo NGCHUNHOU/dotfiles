@@ -160,6 +160,32 @@ nmap <silent> <F12> <C-T>
 au FileType netrw nmap <buffer> h -
 au FileType netrw nmap <buffer> l <CR>
 
+function! GetBrowser()
+  let s:browser = ["chrome", "firefox"]
+  for i in [0,1]
+	  if executable(s:browser[i])
+		  let s:browser = s:browser[i]
+		  return s:browser
+	  endif
+  endfor
+  return -1
+endfunction
+
+function! OpenURLUnderCursor() abort
+  let s:uri = expand('<cWORD>')
+  let s:uri = substitute(s:uri, '?', '\\?', '')
+  let s:uri = substitute(s:uri, '^\~', substitute($HOME, "\/$", "", "").'/', '')
+  let s:uri = substitute(s:uri, '^\.', expand("%:p:h").'/', '')
+  let s:uri = shellescape(s:uri, 1)
+  if s:uri != '' && GetBrowser() != -1
+    silent exec "!".GetBrowser(). " '".s:uri."'"
+    :redraw!
+  else
+    echoerr "uri is empty or no browser could be found"
+  endif
+endfunction
+nnoremap gx :call OpenURLUnderCursor()<CR>
+
 " F1 = open new terminal in full screen
 " F2 = split vertical terminal
 " F3 = toggle between copy mode and terminal mode
@@ -167,3 +193,4 @@ au FileType netrw nmap <buffer> l <CR>
 " ctrl+p = quick open file
 " ctrl+z = swtich buffer
 " f in vim terminal or terminal = file manager auto cd directory on exit
+" gx in normal mode = open file with browser

@@ -171,6 +171,22 @@ function! GetBrowser()
   return -1
 endfunction
 
+function! GetURLUnderCursor(uri)
+  let uriMutable = a:uri
+  if !filereadable(uriMutable)
+          let uriMutable = substitute(uriMutable, '?', '\\?', '')
+          let uriMutable = shellescape(uriMutable, 1)
+	  return uriMutable
+  endif
+  let uriMutable = fnamemodify(uriMutable, ':p')
+  if has("win32unix")
+          let uriMutable = uriMutable[0:1].':'.uriMutable[2:]
+  endif
+  let uriMutable = "file://".uriMutable
+  let uriMutable = shellescape(uriMutable, 1)
+  return uriMutable
+endfunction
+
 function! OpenURLUnderCursor() abort
   " get pathName string input from origin gx key
   let s:uri = expand('<cfile>')
@@ -178,17 +194,7 @@ function! OpenURLUnderCursor() abort
   " return file://c:/path/to/file if it is file and os is windows
   " return file:///path/to/file if it is file and os is windows
   " return https://www.example.com if it is web url
-  if filereadable(s:uri)
-	  let s:uri = fnamemodify(s:uri, ':p')
-	  if has("win32unix")
-		  let s:uri = s:uri[0:1].':'.s:uri[2:]
-	  endif
-	  let s:uri = "file://".s:uri
-	  let s:uri = shellescape(s:uri, 1)
-  else
-	  let s:uri = substitute(s:uri, '?', '\\?', '')
-	  let s:uri = shellescape(s:uri, 1)
-  endif
+  let s:uri = GetURLUnderCursor(s:uri)
   if s:uri != '' && GetBrowser() != -1
     silent exec "!".GetBrowser(). " '".s:uri."'"
     :redraw!

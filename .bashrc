@@ -17,12 +17,12 @@ DIRSUM=$(ls -l $BINARYGROUPDIR | grep -c "^d\|\-")
 . /usr/bin/z.sh
 
 CACHED=0; 
-if [[ ! -f ~/.bashCache ]]; then 
+if [[ -f ~/.bashCache ]]; then 
 	CACHED=1;
 	source ~/.bashCache;
 fi
 
-if [[ "${DIRSUM}" != "${DIROLDSUM}" ]]; then
+reloadPath() {
 	echo "reloading PATH..."
 	exepath=$(find $BINARYGROUPDIR -name "*.exe" -printf "%h\n" | sort | uniq)
 	for text in $(echo ${exepath[@]} | sed "s/ /:/g"); do
@@ -34,6 +34,12 @@ if [[ "${DIRSUM}" != "${DIROLDSUM}" ]]; then
 	DIROLDSUM=$DIRSUM
 	if [[ "${CACHED}" == 1 ]]; then rm ~/.bashCache; fi
 	typeset -p PATH BINARYGROUPDIRNEWLIST DIROLDSUM > ~/.bashCache
+}
+
+if [[ "${DIRSUM}" != "${DIROLDSUM}" ]]; then
+	reloadPath
+else
+	if [[ "${CACHED}" == 0 ]]; then reloadPath; fi
 fi
 
 PROGDEPS="vim fzf rg z"

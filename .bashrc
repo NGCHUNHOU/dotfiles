@@ -44,29 +44,19 @@ DIRSUM=$(ls -l $BINARYGROUPDIR | grep -c "^d\|\-")
 
 defaultShimPath=~/winapps/shims
 defaultBinaryPath=~/winapps/apps
-defaultBashCache=~/.bashShimCache
 shimPath=~/winapps/shim.exe
-currentDirCount=$(ls -l "$defaultBinaryPath" | grep -c ^d)
-isDirCountCached() {
-	if [[ ! -f "$defaultBashCache" ]]; then
-		echo "$defaultBashCache not found, creating it and exit..."
-		cacheDirCount=$(ls -l "$defaultBinaryPath" | grep -c ^d)
-		typeset -p cacheDirCount > "$defaultBashCache"
-		return 1
-	fi
-	return 0
+
+_mkshim() {
+	fileNameWithExt="${1##*/}"
+	fileName="${fileNameWithExt%.*}"
+	touch "${defaultShimPath}/${fileName}.shim"
+	winpath=$(cygpath -w "$1")
+	shimFileContent="path = \"$winpath\""
+	echo "$shimFileContent" > ${defaultShimPath}/${fileName}.shim
+	cp "$shimPath" "${defaultShimPath}/$fileNameWithExt"
 }
 
 mkshim() {
-    isDirCountCached || return 1
-	source "$defaultBashCache"
-
-	# shim wont reload if defaultBinaryPath does not have new directory added
-    if [[ "$currentDirCount" = "$cacheDirCount" ]]; then 
-		echo "No new directory can be found at $defaultBinaryPath, aborting..."
-		return 1 
-	fi
-
     if [[ ! -d "$defaultShimPath" || ! -d "$defaultBinaryPath" || ! -f "$shimPath" ]]; then
         echo "$defaultShimPath or $defaultBinaryPath or $shimPath cannot be found, edit those variables at ~/.bashrc, aborting..."
         return 1
@@ -79,16 +69,7 @@ mkshim() {
         fi
 		echo "making shim file for target binary..."
         binaryPath="$1"
-        fileName="${binaryPath##*/}"
-        fileName="${fileName%.*}"
-        touch "${defaultShimPath}/${fileName}.shim"
-        winpath=$(cygpath -w "$binaryPath")
-        shimFileContent="path = \"$winpath\""
-        echo "$shimFileContent" > "${defaultShimPath}/${fileName}.shim"
-        cp "$shimPath" "${defaultShimPath}/${fileName}.exe"
-
-		cacheDirCount="$currentDirCount"
-		typeset -p cacheDirCount > "$defaultBashCache"
+		_mkshim "$binaryPath"
 
         return 0
     fi
@@ -96,17 +77,9 @@ mkshim() {
 	echo "start reloading shim files..."
 	pathsList=$(find "$defaultBinaryPath" -name "*.exe")
 	for fullpath in ${pathsList[@]}; do
-		fileNameWithExt="${fullpath##*/}"
-		fileName="${fileNameWithExt%.*}"
-		touch "${defaultShimPath}/${fileName}.shim"
-		winpath=$(cygpath -w "$fullpath")
-		shimFileContent="path = \"$winpath\""
-		echo "$shimFileContent" > ${defaultShimPath}/${fileName}.shim
-		cp "$shimPath" "${defaultShimPath}/$fileNameWithExt"
+		_mkshim "$fullpath"
 	done
 
-	cacheDirCount="$currentDirCount"
-	typeset -p cacheDirCount > "$defaultBashCache"
     return 0
 }
 

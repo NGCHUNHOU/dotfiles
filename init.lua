@@ -15,7 +15,11 @@ require("lazy").setup({
   { dir = bundlepath .. "toggleterm.nvim", lazy = true }
 })
 
-require("catppuccin").setup()
+require("catppuccin").setup({
+  styles = {
+    conditionals = {}
+  }
+})
 
 vim.g.lightline = {colorscheme = "catppuccin"}
 

@@ -19,7 +19,46 @@ require("lazy").setup({
   { dir = bundlepath .. "nvim-dap-ui", lazy = true }
 })
 
-require("dapui").setup()
+require("dapui").setup({
+  controls = {
+    element = "repl",
+    enabled = true,
+    icons = {
+      disconnect = "disconnect",
+      pause = "pause",
+      play = "continue",
+      run_last = "run_last",
+      step_back = "step_back",
+      step_into = "step_into",
+      step_out = "step_out",
+      step_over = "step_over",
+      terminate = "stop"
+    }
+  },
+  layouts = { {
+    elements = { {
+      id = "scopes",
+      size = 0.25
+    }, {
+      id = "watches",
+      size = 0.25
+    }, {
+      id = "stacks",
+      size = 0.25
+    }
+  },
+    position = "right",
+    size = 30
+  }, {
+    elements = { {
+      id = "repl",
+      size = 0.8
+    } },
+    position = "bottom",
+    size = 10
+  } }
+})
+
 local dap, dapui = require("dap"), require("dapui")
 
 dap.adapters["pwa-node"] = {
@@ -50,9 +89,11 @@ dap.configurations.javascript = {
 
 dap.listeners.before.attach.dapui_config = function()
   dapui.open()
+  vim.cmd("wincmd j")
 end
 dap.listeners.before.launch.dapui_config = function()
   dapui.open()
+  vim.cmd("wincmd j")
 end
 dap.listeners.before.event_terminated.dapui_config = function()
   dapui.close()
@@ -88,10 +129,13 @@ require("neo-tree").setup({
 })
 
 vim.api.nvim_set_keymap("n", "<C-h>", ":Neotree<cr>", {silent = true, noremap = true})
-vim.api.nvim_set_keymap("n", "<leader>db", ":lua require('dap').toggle_breakpoint()<cr>", {silent = true, noremap = true})
-vim.api.nvim_set_keymap("n", "<leader>dc", ":lua require('dap').continue()<cr>", {silent = true, noremap = true})
-vim.api.nvim_set_keymap("n", "<leader>ds", ":lua require('dap').step_over()<cr>", {silent = true, noremap = true})
-vim.api.nvim_set_keymap("n", "<leader>di", ":lua require('dap').step_into()<cr>", {silent = true, noremap = true})
+
+vim.keymap.set('n', '<F4>', function() dap.toggle_breakpoint() end)
+vim.keymap.set('n', '<F5>', function() dap.continue() end)
+vim.keymap.set('n', '<F6>', function() dap.step_over() end)
+vim.keymap.set('n', '<F7>', function() dap.step_into() end)
+vim.keymap.set('n', '<F8>', function() dap.step_out() end)
+vim.keymap.set('n', '<F9>', function() dap.terminate() end)
 
 if package.config:sub(1,1) == "\\" then
   vim.o.shell = "C:/Program Files/Git/bin/bash.exe"

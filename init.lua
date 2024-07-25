@@ -136,6 +136,7 @@ vim.keymap.set('n', '<F6>', function() dap.step_over() end)
 vim.keymap.set('n', '<F7>', function() dap.step_into() end)
 vim.keymap.set('n', '<F8>', function() dap.step_out() end)
 vim.keymap.set('n', '<F9>', function() dap.terminate() end)
+vim.keymap.set('t', '<esc>', [[<C-\><C-n>]])
 
 if package.config:sub(1,1) == "\\" then
   vim.o.shell = "C:/Program Files/Git/bin/bash.exe"

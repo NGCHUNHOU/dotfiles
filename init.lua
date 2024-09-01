@@ -9,8 +9,7 @@ require("lazy").setup({
   { dir = bundlepath .. "catppuccin", lazy = true },
   { dir = bundlepath .. "lightline.vim", lazy = false },
   { dir = bundlepath .. "plenary.nvim", lazy = true },
-  { dir = bundlepath .. "nui.nvim", lazy = true },
-  { dir = bundlepath .. "neo-tree.nvim", lazy = true },
+  { dir = bundlepath .. "oil.nvim", lazy = true },
   { dir = bundlepath .. "telescope.nvim", lazy = false },
   { dir = bundlepath .. "toggleterm.nvim", lazy = true },
   { dir = bundlepath .. "nvim-treesitter", lazy = false },
@@ -157,16 +156,7 @@ require("catppuccin").setup({
 
 vim.g.lightline = {colorscheme = "catppuccin"}
 
-require("neo-tree").setup({
-  window = {
-    mappings = {
-      ["h"] = {"toggle_node", nowait = false},
-      ["l"] = "open"
-    }
-  }
-})
-
-vim.api.nvim_set_keymap("n", "<C-h>", ":Neotree<cr>", {silent = true, noremap = true})
+require("oil").setup()
 
 vim.keymap.set('n', '<F4>', function() dap.toggle_breakpoint() end)
 vim.keymap.set('n', '<F5>', function() dap.continue() end)
@@ -181,7 +171,7 @@ function set_toggleterm_keymaps()
 end
 vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_toggleterm_keymaps()')
 
-if package.config:sub(1,1) == "\\" then
+if vim.fn.has("win32") == 1 and vim.fn.executable("bash") == 1 then
   vim.o.shell = "C:/Program Files/Git/bin/bash.exe"
   vim.o.shellcmdflag = "-s"
 end
@@ -212,6 +202,7 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fo <cmd>Telescope oldfiles<cr>
+nnoremap <leader>fm <cmd>Oil<cr>
 nnoremap <F11> <C-]>
 nnoremap <F12> <C-T>
 ]])

@@ -1,21 +1,19 @@
 -- init.lua windows 7/10 location: /c/Users/knxuser/AppData/Local/nvim/init.lua
 -- init.lua unix location: ~/.config/nvim/init.lua
 -- rc order: plugin load -> lua script -> vim script
-local lazypath = os.getenv("VIM") .. "/runtime/lazy.nvim"
+local lazypath = os.getenv("VIM") .. "/runtime/bundle/lazy.nvim"
 local bundlepath =  os.getenv("VIM") .. "/runtime/bundle/"
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   { dir = bundlepath .. "catppuccin", lazy = true },
   { dir = bundlepath .. "lightline.vim", lazy = false },
-  { dir = bundlepath .. "plenary.nvim", lazy = true },
   { dir = bundlepath .. "oil.nvim", lazy = true },
-  { dir = bundlepath .. "telescope.nvim", lazy = false },
+  { dir = bundlepath .. "telescope.nvim", lazy = false, dependencies = {{ dir = bundlepath .. "plenary.nvim", lazy = true }}},
   { dir = bundlepath .. "toggleterm.nvim", lazy = true },
   { dir = bundlepath .. "nvim-treesitter", lazy = false },
-  { dir = bundlepath .. "nvim-dap", lazy = true },
-  { dir = bundlepath .. "nvim-nio", lazy = true },
-  { dir = bundlepath .. "nvim-dap-ui", lazy = true }
+  { dir = bundlepath .. "nvim-dap-ui", lazy = true, dependencies = {{ dir = bundlepath .. "nvim-nio", lazy = true }, { dir = bundlepath .. "nvim-dap", lazy = true }}},
+  { dir = bundlepath .. "vim-dadbod-ui", lazy = true, cmd = {"DBUI","DBUIToggle","DBUIAddConnection","DBUIFindBuffer"}, dependencies = {{dir = bundlepath .. "vim-dadbod", lazy = true}}}
 })
 
 require("dapui").setup({

@@ -118,8 +118,35 @@ dap.configurations.python = {
     program = function()
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
     end,
-    pythonPath = "D:\\winapps\\apps\\python\\3.9.6\\python.exe"
+    pythonPath = "D:\\winapps\\apps\\python\\3.9.6\\python.exe",
+    args = function()
+      local args_string = vim.fn.input('Arguments: ')
+      return vim.split(args_string, " ")
+    end,
   },
+}
+
+dap.adapters.lldb = {
+  type = 'executable',
+  command = 'D:\\winapps\\apps\\llvm-mingw\\bin\\lldb-vscode.exe',
+  name = 'lldb'
+}
+
+dap.configurations.cpp = {
+  {
+    name = 'Launch',
+    type = 'lldb',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    args = function()
+      local args_string = vim.fn.input('Arguments: ')
+      return vim.split(args_string, " ")
+    end,
+  }
 }
 
 dap.listeners.before.attach.dapui_config = function()
@@ -137,9 +164,9 @@ dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
 
-require("nvim-treesitter.configs").setup({
-  highlight = { enable = true }
-})
+-- require("nvim-treesitter.configs").setup({
+--   highlight = { enable = true }
+-- })
 
 -- build parser from source if treesitter failed to download parser packages
 -- require("nvim-treesitter.install").prefer_git = false

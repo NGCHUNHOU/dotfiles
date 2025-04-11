@@ -197,8 +197,12 @@ end
 vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_toggleterm_keymaps()')
 
 if vim.fn.has("win32") == 1 and vim.fn.executable("bash") == 1 then
-  vim.o.shell = "C:/Program Files/Git/bin/bash.exe"
-  vim.o.shellcmdflag = "-s"
+  vim.o.shell = '"C:\\Program Files\\Git\\bin\\bash.exe"'
+  vim.o.shellcmdflag = "-c"
+  vim.o.shellquote = ''
+  vim.o.shellxquote = ''
+  vim.o.shellslash = true
+  vim.o.shellxescape = ''
 end
 
 require("toggleterm").setup({

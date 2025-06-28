@@ -34,25 +34,21 @@ require("dapui").setup({
   },
   layouts = { {
     elements = { {
-      id = "scopes",
-      size = 0.25
+      id = "repl",
+      size = 0.6
     }, {
       id = "watches",
       size = 0.25
     }, {
+      id = "scopes",
+      size = 0.1
+    }, {
       id = "stacks",
-      size = 0.25
+      size = 0.1
     }
   },
     position = "right",
-    size = 30
-  }, {
-    elements = { {
-      id = "repl",
-      size = 0.8
-    } },
-    position = "bottom",
-    size = 10
+    size = 90
   } }
 })
 

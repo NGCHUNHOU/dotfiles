@@ -1,6 +1,15 @@
 -- init.lua windows 7/10 location: /c/Users/knxuser/AppData/Local/nvim/init.lua
 -- init.lua unix location: ~/.config/nvim/init.lua
 -- rc order: plugin load -> lua script -> vim script
+if vim.fn.has("win32") == 1 and vim.fn.executable("bash") == 1 then
+  vim.o.shell = '"C:\\Program Files\\Git\\bin\\bash.exe"'
+  vim.o.shellcmdflag = "-c"
+  vim.o.shellquote = ''
+  vim.o.shellxquote = ''
+  vim.o.shellslash = true
+  vim.o.shellxescape = ''
+end
+
 local lazypath = os.getenv("VIM") .. "/runtime/bundle/lazy.nvim"
 local bundlepath =  os.getenv("VIM") .. "/runtime/bundle/"
 vim.opt.rtp:prepend(lazypath)
@@ -191,15 +200,6 @@ function set_toggleterm_keymaps()
   vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
 end
 vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_toggleterm_keymaps()')
-
-if vim.fn.has("win32") == 1 and vim.fn.executable("bash") == 1 then
-  vim.o.shell = '"C:\\Program Files\\Git\\bin\\bash.exe"'
-  vim.o.shellcmdflag = "-c"
-  vim.o.shellquote = ''
-  vim.o.shellxquote = ''
-  vim.o.shellslash = true
-  vim.o.shellxescape = ''
-end
 
 require("toggleterm").setup({
   open_mapping = [[<C-\>]],

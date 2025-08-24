@@ -1,7 +1,7 @@
-diff --git a/init.lua "b/C:\\Users\\Admin\\AppData\\Local/nvim/init.lua"
+diff --git a/init.lua b/init.lua
 index 8d56723..a1bb038 100644
 --- a/init.lua
-+++ "b/C:\\Users\\Admin\\AppData\\Local/nvim/init.lua"
++++ b/init.lua
 @@ -2,7 +2,7 @@
  -- init.lua unix location: ~/.config/nvim/init.lua
  -- rc order: plugin load -> lua script -> vim script

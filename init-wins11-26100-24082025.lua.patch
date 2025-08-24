@@ -1,0 +1,335 @@
+diff --git a/init.lua "b/C:\\Users\\Admin\\AppData\\Local/nvim/init.lua"
+index 8d56723..a1bb038 100644
+--- a/init.lua
++++ "b/C:\\Users\\Admin\\AppData\\Local/nvim/init.lua"
+@@ -2,7 +2,7 @@
+ -- init.lua unix location: ~/.config/nvim/init.lua
+ -- rc order: plugin load -> lua script -> vim script
+ if vim.fn.has("win32") == 1 and vim.fn.executable("bash") == 1 then
+-  vim.o.shell = '"C:\\Program Files\\Git\\bin\\bash.exe"'
++  vim.o.shell = '"C:\\msys64\\usr\\bin\\bash.exe"'
+   vim.o.shellcmdflag = "-c"
+   vim.o.shellquote = ''
+   vim.o.shellxquote = ''
+@@ -22,10 +22,159 @@ require("lazy").setup({
+   { dir = bundlepath .. "toggleterm.nvim", lazy = true },
+   { dir = bundlepath .. "nvim-treesitter", lazy = false },
+   { dir = bundlepath .. "nvim-dap-ui", lazy = true, dependencies = {{ dir = bundlepath .. "nvim-nio", lazy = true }, { dir = bundlepath .. "nvim-dap", lazy = true }}},
+-  { dir = bundlepath .. "vim-dadbod-ui", lazy = true, cmd = {"DBUI","DBUIToggle","DBUIAddConnection","DBUIFindBuffer"}, dependencies = {{dir = bundlepath .. "vim-dadbod", lazy = true}}}
++  { dir = bundlepath .. "typst-preview.nvim", lazy = true, ft = "typst", opts = {} },
++  { dir = bundlepath .. "codecompanion.nvim", lazy = true, opts = {}, dependencies = {{ dir = bundlepath .. "plenary.nvim", lazy = true }, { dir = bundlepath .. "nvim-treesitter", lazy = true }}},
++  { dir = bundlepath .. "nvim-lspconfig", lazy = false },
++  { dir = bundlepath .. "nvim-cmp", lazy = true, dependencies = {
++    { dir = bundlepath .. "cmp-nvim-lsp", lazy = true },
++    { dir = bundlepath .. "cmp-buffer", lazy = true },
++    { dir = bundlepath .. "cmp-path", lazy = true },
++    { dir = bundlepath .. "cmp-cmdline", lazy = true },
++  }}
+ })
+ 
+-require("dapui").setup({
++require("codecompanion").setup({
++  strategies = {
++    chat = {
++      adapter = "ollama_withtools",
++    },
++    inline = {
++      adapter = "ollama_withtools",
++    },
++  },
++  adapters = {
++    ollama = function()
++      return require("codecompanion.adapters").extend("ollama", {
++        name = "deepseek-r1:8b", -- Give this adapter a different name to differentiate it from the default ollama adapter
++        opts = {
++          vision = true,
++          stream = true,
++        },
++        schema = {
++          model = {
++            default = "deepseek-r1:8b",
++          },
++          num_ctx = {
++            default = 16384,
++          },
++          think = {
++            default = function(adapter)
++              -- this'll set `think` to true if the model name contain `qwen3` or `deepseek-r1`
++              local model_name = adapter.model.name:lower()
++              return vim.iter({ "qwen3", "deepseek-r1" }):any(function(kw)
++                return string.find(model_name, kw) ~= nil
++              end)
++            end,
++          },
++          keep_alive = {
++            default = '5m',
++          }
++        },
++      })
++    end,
++    ollama_withtools = function()
++      return require("codecompanion.adapters").extend("ollama", {
++        name = "okamototk/deepseek-r1:8b",
++        opts = {
++          vision = true,
++          stream = true,
++        },
++        schema = {
++          model = {
++            default = "okamototk/deepseek-r1:8b",
++          },
++          num_ctx = {
++            default = 16384,
++          },
++          think = {
++            default = function(adapter)
++              -- this'll set `think` to true if the model name contain `qwen3` or `deepseek-r1`
++              local model_name = adapter.model.name:lower()
++              return vim.iter({ "qwen3", "deepseek-r1" }):any(function(kw)
++                return string.find(model_name, kw) ~= nil
++              end)
++            end,
++          },
++          keep_alive = {
++            default = '5m',
++          }
++        },
++      })
++    end,
++  },
++})
++
++local cmp = require("cmp")
++cmp.setup({
++  mapping = cmp.mapping.preset.insert({
++    ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
++    ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
++    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
++  }),
++  sources = {
++    { name = 'nvim_lsp' }
++  }
++})
++
++local capabilities = require('cmp_nvim_lsp').default_capabilities()
++vim.lsp.config['ts_ls'] = {
++  autostart = false,
++  cmd = {"typescript-language-server.cmd", "--stdio"},
++  capabilities = capabilities
++}
++
++-- autostart lsp with vim.lsp.enable(), manual start with :LspStart, manual stop with :LspStop
++-- vim.lsp.enable('ts_ls')
++
++local dap, dapui = require("dap"), require("dapui")
++
++dap.adapters.coreclr = {
++  type = 'executable',
++  command = 'netcoredbg',
++  args = {'--interpreter=vscode'}
++}
++
++dap.configurations.cs = {
++  {
++    type = "coreclr",
++    name = "launch - netcoredbg",
++    request = "launch",
++    program = function()
++      -- For Windows, set noshellslash might be required in order for netcoredbg to find source references for breakpoints.
++      return vim.fn.input('Path to executable or dll: ', vim.fn.getcwd() .. '/', 'file')
++    end,
++    args = function()
++      local args_string = vim.fn.input('Arguments: ')
++      return vim.split(args_string, " ")
++    end,
++  },
++}
++
++dap.adapters["pwa-node"] = {
++  type = "server",
++  host = "localhost",
++  port = "${port}",
++  executable = {
++    command = "node",
++    args = {"C:\\Users\\Admin\\js-debug\\src\\dapDebugServer.js", "${port}"},
++  }
++}
++
++dap.configurations.javascript = {
++  {
++    type = "pwa-node",
++    request = "launch",
++    name = "Launch file",
++    program = "${file}",
++    cwd = "${workspaceFolder}",
++    args = function()
++      local args_string = vim.fn.input('Arguments: ')
++      return vim.split(args_string, " ")
++    end,
++  },
++}
++
++dapui.setup({
+   controls = {
+     element = "repl",
+     enabled = true,
+@@ -61,106 +210,11 @@ require("dapui").setup({
+   } }
+ })
+ 
+-local dap, dapui = require("dap"), require("dapui")
+-
+-dap.adapters["pwa-node"] = {
+-  type = "server",
+-  host = "localhost",
+-  port = "${port}",
+-  executable = {
+-    command = "node",
+-    args = { bundlepath .. "js-debug/src/dapDebugServer.js", "${port}"},
+-  }
+-}
+-
+-dap.configurations.javascript = {
+-  {
+-    type = "pwa-node",
+-    request = "launch",
+-    name = "Launch file",
+-    program = function()
+-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+-    end,
+-    cwd = "${workspaceFolder}",
+-    args = function()
+-      local args_string = vim.fn.input('Arguments: ')
+-      return vim.split(args_string, " ")
+-    end,
+-  },
+-}
+-
+-dap.adapters.python = function(cb, config)
+-  if config.request == 'attach' then
+-    ---@diagnostic disable-next-line: undefined-field
+-    local port = (config.connect or config).port
+-    ---@diagnostic disable-next-line: undefined-field
+-    local host = (config.connect or config).host or '127.0.0.1'
+-    cb({
+-      type = 'server',
+-      port = assert(port, '`connect.port` is required for a python `attach` configuration'),
+-      host = host,
+-      options = {
+-        source_filetype = 'python',
+-      },
+-    })
+-  else
+-    cb({
+-      type = 'executable',
+-      command = 'D:\\winapps\\apps\\python\\3.9.6\\python.exe',
+-      args = { '-m', 'debugpy.adapter' },
+-      options = {
+-        source_filetype = 'python',
+-      },
+-    })
+-  end
+-end
+-
+-dap.configurations.python = {
+-  {
+-    type = 'python',
+-    request = 'launch',
+-    name = "Launch file",
+-    program = function()
+-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+-    end,
+-    pythonPath = "D:\\winapps\\apps\\python\\3.9.6\\python.exe",
+-    args = function()
+-      local args_string = vim.fn.input('Arguments: ')
+-      return vim.split(args_string, " ")
+-    end,
+-  },
+-}
+-
+-dap.adapters.lldb = {
+-  type = 'executable',
+-  command = 'D:\\winapps\\apps\\llvm-mingw\\bin\\lldb-vscode.exe',
+-  name = 'lldb'
+-}
+-
+-dap.configurations.cpp = {
+-  {
+-    name = 'Launch',
+-    type = 'lldb',
+-    request = 'launch',
+-    program = function()
+-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+-    end,
+-    cwd = '${workspaceFolder}',
+-    stopOnEntry = false,
+-    args = function()
+-      local args_string = vim.fn.input('Arguments: ')
+-      return vim.split(args_string, " ")
+-    end,
+-  }
+-}
+-
+ dap.listeners.before.attach.dapui_config = function()
+   dapui.open()
+-  vim.cmd("wincmd j")
+ end
+ dap.listeners.before.launch.dapui_config = function()
+   dapui.open()
+-  vim.cmd("wincmd j")
+ end
+ dap.listeners.before.event_terminated.dapui_config = function()
+   dapui.close()
+@@ -169,14 +223,12 @@ dap.listeners.before.event_exited.dapui_config = function()
+   dapui.close()
+ end
+ 
+--- require("nvim-treesitter.configs").setup({
+---   highlight = { enable = true }
+--- })
+-
+--- build parser from source if treesitter failed to download parser packages
+--- require("nvim-treesitter.install").prefer_git = false
+--- use windows default native c compiler. use x64 version of cl if neovim is x64
+--- require 'nvim-treesitter.install'.compilers = { "cl" }
++vim.keymap.set('n', '<F4>', function() dap.toggle_breakpoint() end)
++vim.keymap.set('n', '<F5>', function() dap.continue() end)
++vim.keymap.set('n', '<F6>', function() dap.step_over() end)
++vim.keymap.set('n', '<F7>', function() dap.step_into() end)
++vim.keymap.set('n', '<F8>', function() dap.step_out() end)
++vim.keymap.set('n', '<F9>', function() dap.terminate() end)
+ 
+ require("catppuccin").setup({
+   styles = {
+@@ -185,26 +237,19 @@ require("catppuccin").setup({
+ })
+ 
+ vim.g.lightline = {colorscheme = "catppuccin"}
+-
+ require("oil").setup()
+ 
+-vim.keymap.set('n', '<F4>', function() dap.toggle_breakpoint() end)
+-vim.keymap.set('n', '<F5>', function() dap.continue() end)
+-vim.keymap.set('n', '<F6>', function() dap.step_over() end)
+-vim.keymap.set('n', '<F7>', function() dap.step_into() end)
+-vim.keymap.set('n', '<F8>', function() dap.step_out() end)
+-vim.keymap.set('n', '<F9>', function() dap.terminate() end)
++require("toggleterm").setup({
++  open_mapping = [[<C-\>]],
++  direction = 'float'
++})
+ 
+ function set_toggleterm_keymaps()
+   local opts = {buffer = 0}
+   vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+ end
+-vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_toggleterm_keymaps()')
+ 
+-require("toggleterm").setup({
+-  open_mapping = [[<C-\>]],
+-  direction = 'float'
+-})
++vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_toggleterm_keymaps()')
+ 
+ vim.cmd([[
+ set number

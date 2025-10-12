@@ -274,7 +274,7 @@
             pkgs.dust
             pkgs.sd
             pkgs.zoxide
-            
+
             # Dev tools
             pkgs.tmux
             pkgs.git
@@ -296,20 +296,6 @@
             echo ""
             echo "nvim: NixVim with all plugins configured"
             echo "Tools: tmux, ripgrep, fd, eza, duf, dust, sd"
-            echo "derivations verify"
-            echo "nvim is /nix/store/wsvv52ga5rkpwf7l7iqm05aq9znhfnk6-nixvim/bin/nvim"
-            echo "tmux is /nix/store/85q3yp3d524gxxhjycd7mvhm2hfd91v1-tmux-3.5a/bin/tmux"
-            echo "rg is /nix/store/6knwdgjjalzrfa1n36xka5vma2a1wa3x-ripgrep-14.1.1/bin/rg"
-            echo "fd is /nix/store/js9py061fwf82h0r54kach0xvg2y282f-fd-10.2.0/bin/fd"
-            echo "eza is /nix/store/qax5az9sw97ni1lms3xkyv2q86isvs84-eza-0.21.3/bin/eza"
-            echo "duf is /nix/store/d60596528psf9almbzg354p88sviic4h-duf-0.8.1/bin/duf"
-            echo "dust is /nix/store/5by7ns4r0kk8rzarkn59jkqbdajrgxhb-du-dust-1.2.3/bin/dust"
-            echo "sd is /nix/store/pc73rlalq3j1np2zdc8ji41vfm2hxdjq-sd-1.0.0/bin/sd"
-            echo "zoxide is /nix/store/crqmh917vxan5lgadxb10lvbpn9227ss-zoxide-0.9.7/bin/zoxide"
-            echo "git is /nix/store/v2rxk9xkcxsas64wl7ds31al15cm2wqd-git-2.50.1/bin/git"
-            echo ""
-            echo "nvim plugins and runtimepath verify"
-            echo "runtimepath=~/.local/share/nvim/site,/nix/store/4prb9yvqp15gsgjn5hc8mq6ql7vjxvpm-vim-pack-dir,/nix/store/4prb9yvqp15gsgjn5hc8mq6ql7vjxvpm-vim-pack-dir/pack/*/start/*,/etc/xdg/nvim,/nix/store/g7i75czfbw9sy5f8v7rjbama6lr3ya3s-patchelf-0.15.0/share/nvim/site,/usr/local/share/nvim/site,/usr/share/nvim/site,~/.nix-profile/share/nvim/site,/nix/var/nix/profiles/default/share/nvim/site,/var/lib/snapd/desktop/nvim/site,/nix/store/mvmm0i2jwvjzdbsd3la48f1d48y2k2m3-neovim-unwrapped-0.11.3/share/nvim/runtime,/nix/store/mvmm0i2jwvjzdbsd3la48f1d48y2k2m3-neovim-unwrapped-0.11.3/share/nvim/runtime/pack/dist/opt/matchit,/nix/store/mvmm0i2jwvjzdbsd3la48f1d48y2k2m3-neovim-unwrapped-0.11.3/lib/nvim,/nix/store/4prb9yvqp15gsgjn5hc8mq6ql7vjxvpm-vim-pack-dir/pack/*/start/*/after,/var/lib/snapd/desktop/nvim/site/after,/nix/var/nix/profiles/default/share/nvim/site/after,~/.nix-profile/share/nvim/site/after,/usr/share/nvim/site/after,/usr/local/share/nvim/site/after,/nix/store/g7i75czfbw9sy5f8v7rjbama6lr3ya3s-patchelf-0.15.0/share/nvim/site/after,~/.local/share/nvim/site/after,/etc/xdg/nvim/after"
             echo ""
             echo "To enable LSP/DAP: Edit flake.nix and uncomment desired servers"
             echo ""

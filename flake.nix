@@ -257,14 +257,32 @@
 
       in
       rec {
-        mydotfilesWSL2 = nixpkgs.legacyPackages.x86_64-linux.stdenv.mkDerivation {
+        mydotfilesWSL2 = pkgs.stdenv.mkDerivation {
           name = "dotfiles";
           pname = "dotfiles";
           version = "0.1.0";
           src = ./.;
+          nativeBuildInputs = [ pkgs.makeWrapper ];
           installPhase = ''
             mkdir -p $out/bin
-            cp ./.tmux.conf ./.bashrc $out/bin
+            mkdir -p $out/etc
+
+            cp ./.tmux.conf ./.bashrcWSL2 $out/etc/
+            cat > $out/bin/tmux <<EOF
+            #!${pkgs.runtimeShell}
+            exec ${pkgs.tmux}/bin/tmux -f $out/etc/.tmux.conf "\$@"
+            EOF
+            chmod +x $out/bin/tmux
+
+            cat > $out/bin/bash <<EOF
+            #!${pkgs.runtimeShell}
+            exec ${pkgs.bash}/bin/bash --rcfile $out/etc/.bashrcWSL2 "\$@"
+            EOF
+            chmod +x $out/bin/bash
+          '';
+
+          postFixup = ''
+            wrapProgram $out/bin/tmux --suffix PATH : ${pkgs.tmux}/bin
           '';
         };
 
@@ -287,8 +305,9 @@
             pkgs.zoxide
 
             # Dev tools
-            pkgs.tmux
+            # pkgs.tmux
             pkgs.git
+            mydotfilesWSL2
             
             # Optional: LSP servers (uncomment what you need)
             # pkgs.nodePackages.typescript-language-server
@@ -314,7 +333,6 @@
             export VISUAL=nvim
             alias nv="nvim"
             eval "$(zoxide init bash)"
-            alias tmux="tmux -f ${mydotfilesWSL2}/bin/.tmux.conf"
           '';
         };
 

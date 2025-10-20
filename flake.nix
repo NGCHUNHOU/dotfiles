@@ -256,7 +256,18 @@
         };
 
       in
-      {
+      rec {
+        mydotfilesWSL2 = nixpkgs.legacyPackages.x86_64-linux.stdenv.mkDerivation {
+          name = "dotfiles";
+          pname = "dotfiles";
+          version = "0.1.0";
+          src = ./.;
+          installPhase = ''
+            mkdir -p $out/bin
+            cp ./.tmux.conf ./.bashrc $out/bin
+          '';
+        };
+
         packages = {
           default = nvim;
           nvim = nvim;
@@ -303,6 +314,7 @@
             export VISUAL=nvim
             alias nv="nvim"
             eval "$(zoxide init bash)"
+            alias tmux="tmux -f ${mydotfilesWSL2}/bin/.tmux.conf"
           '';
         };
 

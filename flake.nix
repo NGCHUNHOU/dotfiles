@@ -289,6 +289,15 @@
         packages = {
           default = nvim;
           nvim = nvim;
+          ripgrep = pkgs.ripgrep;
+          fd = pkgs.fd;
+          eza = pkgs.eza;
+          duf = pkgs.duf;
+          dust = pkgs.dust;
+          sd = pkgs.sd;
+          zoxide = pkgs.zoxide;
+          git = pkgs.git;
+          mydotfilesWSL2 = mydotfilesWSL2;
         };
 
         devShells.default = pkgs.mkShell {

@@ -331,6 +331,10 @@
           ];
 
           shellHook = ''
+            export EDITOR=nvim
+            export VISUAL=nvim
+            alias nv="nvim"
+            eval "$(zoxide init bash)"
             echo "🚀 NixVim dev environment loaded!"
             echo ""
             echo "nvim: NixVim with all plugins configured"

@@ -257,7 +257,7 @@
 
       in
       rec {
-        mydotfilesWSL2 = pkgs.stdenv.mkDerivation {
+        dotfiles_wsl2 = pkgs.stdenv.mkDerivation {
           name = "dotfiles";
           pname = "dotfiles";
           version = "0.1.0";
@@ -297,7 +297,7 @@
           sd = pkgs.sd;
           zoxide = pkgs.zoxide;
           git = pkgs.git;
-          mydotfilesWSL2 = mydotfilesWSL2;
+          dotfiles_wsl2 = dotfiles_wsl2;
         };
 
         devShells.default = pkgs.mkShell {
@@ -316,7 +316,7 @@
             # Dev tools
             # pkgs.tmux
             pkgs.git
-            mydotfilesWSL2
+            dotfiles_wsl2
             
             # Optional: LSP servers (uncomment what you need)
             # pkgs.nodePackages.typescript-language-server
@@ -337,11 +337,6 @@
             echo "Tools: tmux, ripgrep, fd, eza, duf, dust, sd"
             echo ""
             echo "To enable LSP/DAP: Edit flake.nix and uncomment desired servers"
-            echo ""
-            export EDITOR=nvim
-            export VISUAL=nvim
-            alias nv="nvim"
-            eval "$(zoxide init bash)"
           '';
         };
 
